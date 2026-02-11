@@ -1,0 +1,359 @@
+
+      /* =========================================================
+         ✅ Global / Base
+         ========================================================= */
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+   body {
+    background: #081217; 
+    color: #e2e8f0;
+    padding: 24px;
+}
+      /* =========================================================
+         ✅ Layout containers
+         ========================================================= */
+      .app {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      img{
+        height: 100px;
+        width: 100px;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        padding: 16px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      .muted {
+        opacity: 0.75;
+      }
+
+      /* ✅ Top area (title + stats/buttons) */
+      .topbar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      /* ✅ Shared row layout (buttons + inputs) */
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      /* ✅ 2-column layout: left form | right list */
+      .grid {
+        display: grid;
+        grid-template-columns: 0.95fr 1.15fr;
+        gap: 12px;
+      }
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* =========================================================
+         ✅ Form controls
+         ========================================================= */
+      input,
+      textarea {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #e9eefc;
+        border-radius: 12px;
+        padding: 10px 12px;
+        outline: none;
+      }
+      textarea {
+        min-height: 92px;
+        resize: vertical;
+      }
+      label {
+        font-size: 12px;
+        opacity: 0.85;
+        display: block;
+        margin: 10px 0 6px;
+      }
+
+      /* =========================================================
+         ✅ Buttons
+         ========================================================= */
+      button {
+        border: 0;
+        border-radius: 12px;
+        padding: 10px 14px;
+        cursor: pointer;
+        background: #4f7cff;
+        color: white;
+        font-weight: 800;
+      }
+      button.secondary {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      button.danger {
+        background: #ff4f6d;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      /* =========================================================
+         ✅ Pills (small badges)
+         ========================================================= */
+      .pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        opacity: 0.9;
+      }
+
+      /* =========================================================
+         ✅ Filters
+         ========================================================= */
+      .filters button {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      .filters button.active {
+        outline: 2px solid rgba(79, 124, 255, 0.65);
+      }
+
+      /* =========================================================
+         ✅ Loading spinner + status
+         ========================================================= */
+      .status {
+        display: none;
+        gap: 10px;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        border-top-color: white;
+        animation: spin 0.85s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* =========================================================
+         ✅ Error box
+         ========================================================= */
+      .error {
+        display: none;
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 79, 109, 0.45);
+        background: rgba(255, 79, 109, 0.12);
+        line-height: 1.4;
+      }
+
+      /* =========================================================
+         ✅ Tasks list + cards
+         ========================================================= */
+      .list {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .empty {
+        padding: 14px;
+        opacity: 0.8;
+        border-radius: 14px;
+        border: 1px dashed rgba(255, 255, 255, 0.18);
+      }
+
+      /* ✅ Each task card */
+
+.taskDone {
+    background: linear-gradient(145deg, #064e3b, #065f46);
+    border: 1px solid #10b981;
+    color: #ecfdf5;
+    padding: 20px;
+    border-radius: 16px; 
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+     border-left: 3px solid #10b981; 
+}
+
+.taskPending {
+    background: linear-gradient(145deg, #78730f, #87920e);
+    border: 1px solid #a7bc20;
+    color: #fffbeb;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+     border-left: 3px solid #f59e0b;
+}
+
+
+.taskDone h3, .taskPending h3 {
+    color: #ffffff;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.taskDone .task-desc, .taskPending .task-desc {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+
+.taskDone:hover, .taskPending:hover {
+    transform: translateY(-2px); 
+    filter: brightness(1.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); 
+}
+
+
+.taskDone, .taskPending {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+      .task:hover {
+          transform: translateY(-2px); 
+       
+      }
+
+    
+      .status-badge {
+          padding: 4px 10px;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: bold;
+      }
+
+      .bg-warning { background-color: #fef3c7; color: #92400e; } 
+      .bg-success { background-color: #dcfce7; color: #166534; } 
+
+      .meta {
+          margin-top: 10px;
+          font-size: 0.85rem;
+          color: #666;
+          display: flex;
+          gap: 15px;
+      }
+
+      /* ✅ Card action buttons */
+      .actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .actions button {
+        padding: 8px 10px;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+       .btn-delete {
+      background-color: #fee2e2;
+      color: #dd4b4b;           
+      border: 1px solid #fca5a5;
+      padding: 8px 16px;
+      border-radius: 50px;       
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;                  
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .btn-delete:hover {
+      background-color: #dc2626; 
+      color: white;
+      transform:  scale(1.02);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  }
+
+   .btn-done{
+      background-color: #afe9bd;
+      color: #1aa312;           
+      border: 1px solid #82b361;
+   }
+
+   .btn-done:hover{
+       background-color:  #1aa312;  
+      color: white;
+      transform:  scale(1.02);
+      box-shadow: 0 4px 12px rgba(38, 220, 93, 0.3);
+   }
+
+  .btn-pending {
+    background-color: #d2dbe4; 
+    color: #475569;         
+    border: 1px solid #e2e8f0;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-pending:hover {
+    background-color: #e2e8f0;
+    color: #1e293b;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+
+.date-tag{
+  color: #e9f0f3;
+}
+
+.messageList{
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: rgba(227, 98, 98, 0.663);
+        border: 1px solid rgba(36, 10, 10, 0.771);
+        opacity: 0.9;
+        box-shadow:0 10px 15px -3px rgba(16, 7, 7, 0.78);
+      
+}
+
+      /* =========================================================
+         ✅ Toast popup (bottom-right)
+         ========================================================= */
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        background: rgba(0, 0, 0, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(10px);
+        padding: 12px 14px;
+        border-radius: 14px;
+        display: none;
+        max-width: 380px;
+        line-height: 1.35;
+      }
+    
