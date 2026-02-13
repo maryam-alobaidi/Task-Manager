@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <link rel="shortcut icon" href="images/logo_image1.png" type="image/png" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -29,6 +30,7 @@
 
           <div class="row">
             <span class="pill" id="stats">Total: 0 • Pending: 0 • Done: 0</span>
+            <div id="live-clock" class="digital-clock"></div>
             <button class="secondary" id="btnClearAll">Clear All 🧹</button>
           </div>
         </div>
@@ -118,5 +120,31 @@
     <div class="toast" id="toast"></div>
 
     <script src="javaScript.js"></script>
+
+    <footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-left">
+            <p class="copyright">&copy; 2026 <span>Task Manager</span></p>
+        </div>
+
+        <div class="footer-center">
+            <p class="designer">Designed & Developed by <span class="name">Maryam Al Obaidi</span></p>
+        </div>
+
+        <div class="footer-right">
+            <div class="social-links-container">
+                <a href="https://github.com/maryam-alobaidi" target="_blank" class="social-icon github" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/maryam-al-obaidi-2620651b7/" target="_blank" class="social-icon linkedin" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="mailto:maryamalobaidi107@gmail.com" class="social-icon envelope" title="Email Me">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
 </body>
 </html>

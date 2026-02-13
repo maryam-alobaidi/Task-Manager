@@ -2,6 +2,9 @@
       /* =========================================================
          ✅ Global / Base
          ========================================================= */
+         * {
+    box-sizing: border-box;
+}
       :root {
         color-scheme: dark;
       }
@@ -68,6 +71,57 @@
           grid-template-columns: 1fr;
         }
       }
+
+      /* For phone mini screen */
+      @media (max-width: 600px) {
+    body {
+        padding: 12px; 
+    }
+    .topbar {
+        flex-direction: column; 
+        align-items: flex-start;
+    }
+
+    .toast {
+        right: 10px;
+        left: 10px;
+        width: auto;
+    }
+
+    .main-footer {
+        background: #1e1e1e !important; 
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 12px 10px; 
+        margin: 20px auto;  
+        
+        width: calc(100% - 10px); /* for resize  */
+        max-width: 300px; 
+    }
+
+    .footer-container {
+        flex-direction: column !important;
+        gap: 8px;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .footer-center { order: 1; } 
+    .footer-right { order: 2; margin: 5px 0; } 
+    .footer-left { order: 3; } 
+
+  
+    .copyright, .designer {
+        font-size: 0.7rem !important;
+        text-align: center;
+    }
+    
+    .social-links-container {
+        gap: 20px;
+    }
+}
 
       /* =========================================================
          ✅ Form controls
@@ -201,6 +255,8 @@
     border-radius: 16px; 
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
      border-left: 3px solid #10b981; 
+     padding: 5px 5px;
+     border-radius: 12px;
 }
 
 .taskPending {
@@ -211,6 +267,9 @@
     border-radius: 16px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
      border-left: 3px solid #f59e0b;
+         padding: 5px 5px;
+         border-radius: 12px;
+
 }
 
 
@@ -222,14 +281,25 @@
 
 .taskDone .task-desc, .taskPending .task-desc {
     color: rgba(255, 255, 255, 0.9);
-}
+    
+    /* السطور السحرية الأربعة */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
 
+    /* إضافات ضرورية للثبات */
+    word-break: break-word; /* لضمان كسر الكلمات الطويلة جداً */
+    max-width: 100%;       /* لضمان عدم خروج النص عن الكرت */
+}
 
 .taskDone:hover, .taskPending:hover {
     transform: translateY(-2px); 
     filter: brightness(1.1);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); 
 }
+
 
 
 .taskDone, .taskPending {
@@ -240,7 +310,6 @@
        
       }
 
-    
       .status-badge {
           padding: 4px 10px;
           border-radius: 20px;
@@ -357,3 +426,169 @@
         line-height: 1.35;
       }
     
+
+    /* Timer card */
+
+    /* حاوية العداد والزر */
+.timer-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* دفع العناصر لليمين */
+    gap: 12px;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05); /* خط فاصل بسيط */
+}
+
+/* تنسيق الساعة (الرقم) */
+.timer-display {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #252423; 
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    letter-spacing: 1px;
+}
+
+/* تنسيق زر التشغيل */
+.btn-timer-toggle {
+    /* الأبعاد لجعل الدائرة متساوية */
+    width: 45px;
+    height: 45px;
+    
+    /* الألوان: خلفية زجاجية شفافة مع لون نص مميز */
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 0, 0, 0.5); /* لون سماوي احترافي */
+   
+    
+    /* التوسيط داخل الدائرة */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ff3131; /* لون أحمر نيون */
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 49, 49, 0.6);
+    
+    /* الخط والتصميم */
+    font-size: 18px; /* لتكبير الأيقونة (Emoji) */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(5px); /* تأثير الزجاج الضبابي */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-timer-toggle.active {
+    border-color: #ff0000;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* حركات التفاعل (Hover) */
+.btn-timer-toggle:hover {
+    border-color: #ff0000;
+    transform: scale(1.1) rotate(5deg); /* حركة لطيفة عند التمرير */
+    box-shadow: 0 0 20px rgba(255, 30, 0, 0.4);
+}
+
+
+
+.timer-running .timer-display {
+    color: #f59e0b; /* برتقالي عند العمل */
+    text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.main-footer {
+    background: rgba(20, 20, 20, 0.8); /* خلفية داكنة شفافة */
+    backdrop-filter: blur(10px); /* تأثير الزجاج الضبابي */
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 20px 0;
+    margin-top: 40px;
+    color: #999;
+    font-family: 'Inter', sans-serif;
+    width: 800px;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    flex-wrap: wrap; 
+    gap: 15px;
+}
+
+.footer-left .copyright span {
+    color: #ff4f4f; 
+    font-weight: bold;
+}
+
+.footer-center .name {
+    color: #fff;
+    font-weight: 600;
+    position: relative;
+    transition: 0.3s;
+}
+
+.footer-center .name:hover {
+    color: #ff4f4f;
+    text-shadow: 0 0 10px rgba(255, 79, 79, 0.5);
+}
+
+.social-links-container {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03);
+    color: #ccc;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.social-icon:hover {
+    transform: translateY(-5px);
+    color: #fff;
+    background: rgba(255, 79, 79, 0.15);
+    border-color: #ff4f4f;
+}
+
+
+.digital-clock {
+    font-family: 'Courier New', monospace;
+    color: #ff4f4f; 
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.digital-clock::before{
+    content: " 🕒 "; 
+    font-size: 0.8rem;
+}

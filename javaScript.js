@@ -12,6 +12,7 @@ const list=document.getElementById("list");
 const btnClearAll=document.getElementById("btnClearAll");
 const stats=document.getElementById("stats");
 const search=document.getElementById("search");
+const activeTimers={};
 
 
  //Creat IndexedDB 
@@ -46,7 +47,11 @@ if (titleInput.value.trim() !== "" && titleInput.value.trim().length >= 3) {
             title: titleInput.value, 
             desc: descInput.value,
             status: 'pending' ,
-            createdAt:dateNow.toLocaleString()
+            createdAt:Date.now(),
+            startTime:null,
+            totalTime:0,
+            isRunning:false
+
         });
     } else {
         showToast("Please enter a title (min 3 chars)");
@@ -105,7 +110,7 @@ function saveTasks(task) {
 }
 
 //Display task
-async function displayTasks(filterType = "all") {
+function displayTasks(filterType = "all") {
     if (!db) return;
 
     const transaction = db.transaction(["tasks"], "readonly");
@@ -113,8 +118,8 @@ async function displayTasks(filterType = "all") {
     const request = store.getAll();
 
     list.innerHTML = "";
-
     request.onsuccess = () => {
+        
         let tasks = request.result;
         filterType=filterType.toLowerCase();
          if(filterType!=='all'){
@@ -139,31 +144,13 @@ async function displayTasks(filterType = "all") {
             btnClearAll.style.opacity = "1";
 
             tasks.forEach(t => {
-                const div = document.createElement('div');
-                let isDone = t.status === 'done';
-                
-                div.classList.add("task");
-                div.classList.add(isDone ? "taskDone" : "taskPending");
 
-                div.innerHTML = `
-                    <div class="task-header">
-                        <h3>${t.title}</h3>
-                        <span class="status-badge ${isDone ? 'bg-success' : 'bg-warning'}">
-                            ${isDone ? '✅ Finished' : '⏳ ' + (t.status || 'pending')}
-                        </span>
-                    </div>
-                    <p class="task-desc">${t.desc || 'No description provided.'}</p>
-                    <div class="meta">
-                        <span class="date-tag">#${t.id}</span>
-                        <span class="date-tag">🗓️ ${new Date(t.createdAt).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</span>
-                    </div>
-                    <div class="actions" data-id="${t.id}">
-                        <button class="${isDone ? 'btn-pending' : 'btn-done'}"> 
-                            ${isDone ? 'Mark Pending ↩️' : 'Mark Done ✔️'}
-                        </button>
-                        <button class="btn-delete">Delete 🗑️ </button>
-                    </div>
-                `;
+              const div =  writeTheDiv(t);
+                if(t.isRunning){
+                   setTimeout(()=>{
+                    startLiveUpdate(t,t.id);
+                   },5) 
+                }
                 list.prepend(div);
             });
         }
@@ -176,7 +163,7 @@ async function displayTasks(filterType = "all") {
 
 function deleteTask(id){
   if (!db) {
-        console.error("Database not initialized yet!");
+       showToast("Database not initialized yet!","info");
         return;
     }
 
@@ -204,49 +191,70 @@ function deleteTask(id){
 }
 
 
-function markDone(id){
-     if (!db) {
-        console.error("Database not initialized yet!");
+function markDone(id) {
+    if (!db) {
+        showToast("Database not initialized yet!", "info");
         return;
     }
 
-    const transaction=db.transaction(["tasks"],"readwrite");
-    const store=transaction.objectStore("tasks");
-    const request= store.get(id);
+    const transaction = db.transaction(["tasks"], "readwrite");
+    const store = transaction.objectStore("tasks");
+    const request = store.get(id);
 
-    request.onsuccess=()=>{
+    request.onsuccess = () => {
+        const task = request.result;
+
+        if (task.status === "pending") {
+            // --- الحالة أ: تحويل من قيد الانتظار إلى تم الإنجاز ---
+            task.status = "done";
+
+            if (task.isRunning) {
+                // إيقاف العداد وحفظ الوقت فوراً
+                const sessionDuration = Date.now() - task.startTime;
+                task.totalTime = (task.totalTime || 0) + sessionDuration;
+                task.isRunning = false;
+                
+                // تنظيف الذاكرة من العداد النشط
+                if (activeTimers[id]) {
+                    clearInterval(activeTimers[id]);
+                    delete activeTimers[id];//important for clear for the memory
+                }
+                showToast("Task completed and timer saved!", "success");
+            }
+        } else {
+           
+            task.status = "pending";
+            task.isRunning = false;
+            showToast("Task moved back to pending", "info");
+        }
+
+        const updateRequest = store.put(task);
+        updateRequest.onsuccess = () => {
+            displayTasks();
+            updateStats();
+        };
+    };
+}
+
+
+list.addEventListener("click", (e) => {
+    const target = e.target;
     
-    const task=request.result;
-     
-    if(task.status==="pending"){ 
-        task.status="done";
+    const actionsContainer = target.closest(".actions");
 
-    }else{
-    task.status="pending";
-   }
+    if (!actionsContainer) return;
 
-   const updateTaskStatu=store.put(task);
-   
-   updateTaskStatu.onsuccess=()=>{
-    displayTasks();
-    updateStats();
-   }
-   }
-    
-} 
+    const taskId = Number(actionsContainer.dataset.id);
 
-
-list.addEventListener("click",(e)=>{
-    const target=e.target;
-    const taskId=Number(target.closest(".actions").dataset.id);
-
-    if(target.classList.contains('btn-delete')){
+    if (target.classList.contains('btn-delete')) {
         deleteTask(taskId);
     }
-   if (target.classList.contains('btn-done') || target.classList.contains('btn-pending')) {
-            markDone(taskId);
-        }
-})
+    
+    if (target.classList.contains('btn-done') || target.classList.contains('btn-pending')) {
+        markDone(taskId);
+
+    }
+});
 
 
 //For Tip: Press Ctrl + Enter to add quickly.
@@ -315,7 +323,6 @@ function initFilters() {
 })
 }
 
-
 initFilters();
 
 
@@ -357,7 +364,6 @@ search.addEventListener('input',(e)=>{
     task.title.toLowerCase().includes(value.toLowerCase()));  
 
     renderFilteredTasks(filterCase);
-
     }
 
 })
@@ -365,7 +371,7 @@ search.addEventListener('input',(e)=>{
 
 function renderFilteredTasks(filterCase){
         list.innerHTML=``;
-         debugger;
+        
         shown.textContent = "# " + filterCase.length + " shown.";
 
         if (filterCase.length === 0) {
@@ -385,15 +391,29 @@ function renderFilteredTasks(filterCase){
             btnClearAll.style.opacity = "1";
 
             filterCase.forEach(t => {
-                const div = document.createElement('div');
+             const div = writeTheDiv(t);
+                list.prepend(div);
+            });
+        }
+}
+
+function writeTheDiv(t){
+     const div = document.createElement('div');
                 let isDone = t.status === 'done';
                 
                 div.classList.add("task");
                 div.classList.add(isDone ? "taskDone" : "taskPending");
-
-                div.innerHTML = `
+   div.innerHTML = `
                     <div class="task-header">
                         <h3>${t.title}</h3>
+                       <div class="timer-container">
+                           <span class="timer-display" id="timer-${t.id}">${formatTime(t.totalTime||0)}</span>
+                            <button id="btn-timer-${t.id}" 
+                                        class="btn-timer-toggle" 
+                                        onclick="toggleTimer(${t.id}, event)"
+                                        ${isDone ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+                                    ${t.isRunning ? '<span>⏸</span>' : '<span>▶</span>'}
+                                </button>                       </div>
                         <span class="status-badge ${isDone ? 'bg-success' : 'bg-warning'}">
                             ${isDone ? '✅ Finished' : '⏳ ' + (t.status || 'pending')}
                         </span>
@@ -401,8 +421,9 @@ function renderFilteredTasks(filterCase){
                     <p class="task-desc">${t.desc || 'No description provided.'}</p>
                     <div class="meta">
                         <span class="date-tag">#${t.id}</span>
-                        <span class="date-tag">🗓️ ${new Date(t.createdAt).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})}</span>
-                    </div>
+                        
+                        <span class="date-tag">
+                    <small>📅</small> ${new Date(t.createdAt).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'})} </span>  </div>
                     <div class="actions" data-id="${t.id}">
                         <button class="${isDone ? 'btn-pending' : 'btn-done'}"> 
                             ${isDone ? 'Mark Pending ↩️' : 'Mark Done ✔️'}
@@ -410,9 +431,7 @@ function renderFilteredTasks(filterCase){
                         <button class="btn-delete">Delete 🗑️ </button>
                     </div>
                 `;
-                list.prepend(div);
-            });
-        }
+                return div;
 }
 
 search.addEventListener('blur',()=>{
@@ -420,3 +439,87 @@ search.addEventListener('blur',()=>{
 search.value = "";
 })
 
+function toggleTimer(id,e){
+    if (!db) {
+        showToast("Database not initialized yet!","info");
+        return;
+    }
+
+    const transaction=db.transaction(["tasks"],"readwrite");
+    const store=transaction.objectStore("tasks");
+    const request= store.get(id);
+
+    request.onsuccess = () => {
+    const task = request.result;
+    const btnToggel = e.target;
+        if(task.status==="done"){
+            showToast("Cannot start timer for a finished task!", "info");          
+                 if(task.isRunning){
+                task.isRunning=false;
+                const sessionDuration = Date.now() - task.startTime;
+                task.totalTime = (task.totalTime || 0) + sessionDuration;
+                clearInterval(timerInterval);
+                store.put(task);
+           }
+           return;
+        }
+
+    if (task.isRunning === false ) {
+        // --- حالة البدء ---
+        task.isRunning = true;
+        btnToggel.innerHTML = '<span>⏸</span>';
+        
+        // سجل لحظة البداية الآن
+        task.startTime = Date.now(); 
+        
+        startLiveUpdate(task, id);
+    } else {
+        // --- حالة الإيقاف ---
+        task.isRunning = false;
+        btnToggel.innerHTML = '<span>▶</span>';
+        
+        // اطرح الوقت الحالي من startTime القديم المخزن في القاعدة
+        const sessionDuration = Date.now() - task.startTime;
+        
+        // أضف الوقت الجديد للمجموع الكلي
+        task.totalTime = (task.totalTime || 0) + sessionDuration;
+        
+        clearInterval(activeTimers[id]);
+    }
+    
+    // حفظ التعديلات في IndexedDB
+    store.put(task);
+};}
+
+
+function startLiveUpdate(task,id){
+if(activeTimers[id]) clearInterval(activeTimers[id]);
+
+   const timerDisplay=document.querySelector(`#timer-${id}`)
+   activeTimers[id]=setInterval(()=>{
+   const elapsed=(Date.now()-task.startTime)+(task.totalTime||0) ;
+  
+   timerDisplay.textContent=formatTime(elapsed);
+   },1000)
+    
+}
+
+function formatTime(ms) {
+    if (ms < 0) ms = 0;
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    // استخدام padStart لإضافة صفر على اليسار إذا كان الرقم أقل من 10
+    return [hours, minutes, seconds]
+        .map(v => v.toString().padStart(2, '0'))
+        .join(':');
+}
+
+function updateClock() {
+    const now = new Date();
+    document.getElementById('live-clock').textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
