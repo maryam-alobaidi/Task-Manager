@@ -525,9 +525,8 @@ setInterval(updateClock, 1000);
 updateClock();
 
 
-async function updateWeather(){
-    
-      const weatherIcon = document.getElementById("weatherIcon");
+async function updateWeather() {
+    const weatherIcon = document.getElementById("weatherIcon");
     const TempMax = document.getElementById("weatherTempMax");
     const TempMin = document.getElementById("weatherTempMin");
     const humidity = document.getElementById("weatherTempHumidity");
@@ -536,35 +535,27 @@ async function updateWeather(){
     const APIkey = "6bb7c1cb5842a6e2826320d0e191a685";
 
     try {
-        // 1. تحديد الموقع بناءً على الـ IP
         const geoResponse = await fetch("https://ipapi.co/json/");
         const geoData = await geoResponse.json();
-        const lat = geoData.lat;
-        const lon = geoData.lon;
+
+        const lat = geoData.latitude;  
+        const lon = geoData.longitude; 
         const city = geoData.city;
 
-        // 2. جلب بيانات الطقس باستخدام الإحداثيات
         const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${APIkey}`;
+        
         const response = await fetch(url);
         const weatherData = await response.json();
 
-        // 3. استخراج البيانات من مساراتها الصحيحة في الـ JSON
         const statusIcon = weatherData.weather[0].icon; 
-        const tempMaxVal = Math.round(weatherData.main.temp_max);
-        const tempMinVal = Math.round(weatherData.main.temp_min); 
-        const humidityVal = weatherData.main.humidity; 
-        const countryName = weatherData.sys.country;
-
-        // 4. تحديث واجهة المستخدم (UI)
-        weatherIcon.innerHTML = `<img src="https://openweathermap.org/img/wn/${statusIcon}@2x.png" alt="weather icon">`;
-        TempMax.innerHTML = ` ${ tempMaxVal}°C  `;
-        TempMin.innerHTML = ` ${ tempMinVal}°C  `;
-        humidity.innerHTML = ` ${ humidityVal}  `;
-        cityDisplay.innerHTML = ` ${city}, ${countryName}`;
-}catch(error){
-    showToast(error,"error");
-}
+        weatherIcon.innerHTML = `<img src="https://openweathermap.org/img/wn/${statusIcon}@2x.png" style="width:40px">`;
         
-}
+        TempMax.innerHTML = `${Math.round(weatherData.main.temp_max)}°`;
+        TempMin.innerHTML = `${Math.round(weatherData.main.temp_min)}°`;
+        humidity.innerHTML = `${weatherData.main.humidity}%`;
+        cityDisplay.innerHTML = `${city}`;
 
-updateWeather();
+    } catch (error) {
+        console.error("Erorr to fetch the data .", error);
+    }
+}
