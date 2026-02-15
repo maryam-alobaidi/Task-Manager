@@ -524,7 +524,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-
 async function updateWeather() {
     const weatherIcon = document.getElementById("weatherIcon");
     const TempMax = document.getElementById("weatherTempMax");
@@ -533,32 +532,41 @@ async function updateWeather() {
     const cityDisplay = document.getElementById("weatherCity");
 
     const APIkey = "6bb7c1cb5842a6e2826320d0e191a685";
+    
+    const isLocked = sessionStorage.getItem("weather_requested");
+    if (isLocked) {
+       
+        return; 
+    }
 
     try {
-        const geoResponse = await fetch("https://ipapi.co/json/");
+        const geoResponse = await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client");
+        if (!geoResponse.ok) throw new Error("Service Limited");
+        
         const geoData = await geoResponse.json();
-
-        const lat = geoData.latitude;  
-        const lon = geoData.longitude; 
-        const city = geoData.city;
+        const lat = geoData.latitude;
+        const lon = geoData.longitude;
+        const city = geoData.city || "Barcelona"; 
 
         const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${APIkey}`;
-        
         const response = await fetch(url);
         const weatherData = await response.json();
 
-        const statusIcon = weatherData.weather[0].icon; 
-        weatherIcon.innerHTML = `<img src="https://openweathermap.org/img/wn/${statusIcon}@2x.png" style="width:40px">`;
+        const statusIcon = weatherData.weather[0].icon;
+        weatherIcon.innerHTML = `<img src="https://openweathermap.org/img/wn/${statusIcon}@2x.png" style="width:35px">`;
         
         TempMax.innerHTML = `${Math.round(weatherData.main.temp_max)}°`;
         TempMin.innerHTML = `${Math.round(weatherData.main.temp_min)}°`;
+        
         humidity.innerHTML = `${weatherData.main.humidity}`;
-        cityDisplay.innerHTML = `${city}`;
+        cityDisplay.innerHTML = city;
+
+        sessionStorage.setItem("weather_requested", "true");
 
     } catch (error) {
-        showToast("Erorr to fetch the data .", error);
-        if(cityDisplay) cityDisplay.innerHTML = "Offline";
+        console.error("Error details:", error);
+        if (cityDisplay) cityDisplay.innerHTML = "Offline";
     }
 }
 
-updateWeather();
+window.addEventListener('load', updateWeather);
