@@ -560,3 +560,5 @@ async function updateWeather() {
         if(cityDisplay) cityDisplay.innerHTML = "Offline";
     }
 }
+
+updateWeather();
