@@ -537,7 +537,7 @@ async function updateWeather(){
 
     try {
         // 1. تحديد الموقع بناءً على الـ IP
-        const geoResponse = await fetch("http://ip-api.com/json/");
+        const geoResponse = await fetch("https://ipapi.co/json/");
         const geoData = await geoResponse.json();
         const lat = geoData.lat;
         const lon = geoData.lon;
