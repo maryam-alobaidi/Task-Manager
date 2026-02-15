@@ -552,7 +552,7 @@ async function updateWeather() {
         
         TempMax.innerHTML = `${Math.round(weatherData.main.temp_max)}°`;
         TempMin.innerHTML = `${Math.round(weatherData.main.temp_min)}°`;
-        humidity.innerHTML = `${weatherData.main.humidity}%`;
+        humidity.innerHTML = `${weatherData.main.humidity}`;
         cityDisplay.innerHTML = `${city}`;
 
     } catch (error) {
