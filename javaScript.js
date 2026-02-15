@@ -556,6 +556,7 @@ async function updateWeather() {
         cityDisplay.innerHTML = `${city}`;
 
     } catch (error) {
-        console.error("Erorr to fetch the data .", error);
+        showToast("Erorr to fetch the data .", error);
+        if(cityDisplay) cityDisplay.innerHTML = "Offline";
     }
 }
