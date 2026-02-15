@@ -31,7 +31,21 @@
           <div class="row">
             <span class="pill" id="stats">Total: 0 • Pending: 0 • Done: 0</span>
             <div id="live-clock" class="digital-clock"></div>
-            <button class="secondary" id="btnClearAll">Clear All 🧹</button>
+
+           <div class="weather-wrapper">
+    <span class="weather-icon" id="weatherIcon">-</span>
+    <span class="city-name" id="weatherCity">City</span>
+    <div class="temp-group">
+        <span class="temp-max" id="weatherTempMax">--</span>
+        <span class="temp-divider">/</span>
+        <span class="temp-min" id="weatherTempMin">--</span>
+    </div>
+    <div class="humidity-group">
+        <i class="fas fa-tint"></i> <span id="weatherTempHumidity">--</span>%
+    </div>
+</div>
+
+            <button class="secondary clear"  id="btnClearAll">Clear All 🧹</button>
           </div>
         </div>
 
@@ -48,7 +62,7 @@
 
           <!-- ✅ Search -->
           <div class="row" style="min-width: 280px">
-            <input id="search" placeholder="Search title/description…" />
+            <input id="search" placeholder="Search title…" />
           </div>
         </div>
 

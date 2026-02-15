@@ -81,11 +81,19 @@
         flex-direction: column; 
         align-items: flex-start;
     }
-
-    .toast {
-        right: 10px;
-        left: 10px;
-        width: auto;
+.toast {
+        position: fixed; /* لضمان ثباتها أثناء التمرير */
+        bottom: 30px;    /* المسافة من أسفل الشاشة */
+        left: 50%;       /* وضعها في المنتصف أفقياً */
+        transform: translateX(-50%); /* سحبها للخلف بنسبة 50% لضمان التوسط الدقيق */
+        
+        width: 80%;      /* جعلها صغيرة (80% من عرض الشاشة) */
+        max-width: 300px; /* لا يتجاوز عرضها 300px لتبقى صغيرة */
+        
+        text-align: center; /* توسيط النص بداخلها */
+        border-radius: 12px; /* حواف دائرية ناعمة */
+        z-index: 9999;   /* لضمان ظهورها فوق كل شيء */
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* ظل أقوى لتبدو بارزة */
     }
 
     .main-footer {
@@ -376,6 +384,21 @@
       box-shadow: 0 4px 12px rgba(38, 220, 93, 0.3);
    }
 
+  .secondary.clear {
+    background-color: transparent;
+    border: 1px solid #92400e;
+    color: #92400e;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.secondary.clear:hover {
+    background-color: #92400e;
+    color: #ffffff;
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
   .btn-pending {
     background-color: #d2dbe4; 
     color: #475569;         
@@ -586,9 +609,54 @@
     font-size: 0.9rem;
     font-weight: bold;
     margin-right: 15px;
+        background: rgba(255, 255, 255, 0.1);
+   border-radius: 30px;
+        width: 80px; 
+            height: auto;
 }
 
 .digital-clock::before{
     content: " 🕒 "; 
     font-size: 0.8rem;
+
+}
+
+.weather-wrapper {
+    display: flex; /* يجعل العناصر بجانب بعضها */
+    align-items: center; /* يوسط العناصر عمودياً */
+    gap: 15px; /* يترك مسافة بين كل عنصر والآخر */
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1); 
+    padding: 5px 15px;
+    border-radius: 30px;
+   
+}
+
+.weather-icon img {
+    width: 40px; 
+    height: auto;
+    display: block;
+}
+
+.temp-group {
+    display: flex;
+    gap: 4px;
+    font-weight: bold;
+}
+
+.temp-max {
+    color: #ff4d4d;
+}
+
+.temp-min {
+    color: #4da6ff; 
+}
+
+.humidity-group {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 3px;
 }
